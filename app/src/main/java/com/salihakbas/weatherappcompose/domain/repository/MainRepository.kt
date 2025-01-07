@@ -1,0 +1,3 @@
+package com.salihakbas.weatherappcompose.domain.repository
+
+interface MainRepository
