@@ -1,6 +1,7 @@
 package com.salihakbas.weatherappcompose.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,6 +41,15 @@ fun NavigationGraph(
             val viewModel: HomeViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val uiEffect = viewModel.uiEffect
+
+            LaunchedEffect(Unit) {
+                viewModel.getWeather(
+                    lat = 41.0082,
+                    lon = 28.9784,
+                    apiKey = "bb2db751f755d8dc7eeead1e61cf6356"
+                )
+            }
+
             HomeScreen(
                 uiState = uiState,
                 uiEffect = uiEffect,
