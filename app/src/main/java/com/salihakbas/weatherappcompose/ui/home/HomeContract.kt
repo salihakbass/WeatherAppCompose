@@ -1,9 +1,11 @@
 package com.salihakbas.weatherappcompose.ui.home
 
+import com.salihakbas.weatherappcompose.data.model.Weather
+
 object HomeContract {
     data class UiState(
         val isLoading: Boolean = false,
-        val list: List<String> = emptyList(),
+        val weatherData: Weather? = null
     )
 
     sealed class UiAction
