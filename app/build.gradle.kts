@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.salihakbas.weatherappcompose"
-    compileSdk = 34
+    compileSdk = 35
 
     android.buildFeatures.buildConfig = true
 
@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(libs.espresso.core)
