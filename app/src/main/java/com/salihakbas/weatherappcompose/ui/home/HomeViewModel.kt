@@ -1,9 +1,8 @@
 package com.salihakbas.weatherappcompose.ui.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.salihakbas.weatherappcompose.domain.repository.MainRepository
+import com.salihakbas.weatherappcompose.domain.usecase.WeatherUseCase
 import com.salihakbas.weatherappcompose.ui.home.HomeContract.UiAction
 import com.salihakbas.weatherappcompose.ui.home.HomeContract.UiEffect
 import com.salihakbas.weatherappcompose.ui.home.HomeContract.UiState
@@ -20,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val mainRepository: MainRepository
+    private val weatherUseCase: WeatherUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
@@ -30,23 +29,27 @@ class HomeViewModel @Inject constructor(
     val uiEffect: Flow<UiEffect> by lazy { _uiEffect.receiveAsFlow() }
 
     fun onAction(uiAction: UiAction) {
+        when (uiAction) {
+            is UiAction.FetchWeather -> fetchWeather(uiAction.lat, uiAction.lon, uiAction.apiKey)
+        }
     }
 
-    fun getWeather(lat: Double, lon: Double, apiKey: String) {
+     fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            try {
-                val weather = mainRepository.getWeather(lat,lon,apiKey)
-                println("Weather Response: $weather")
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        weatherData = weather
-                    )
-                }
-            }catch (e: Exception) {
-                e.printStackTrace()
-                _uiState.update { it.copy(isLoading = false) }
+            val weatherResult = weatherUseCase.getWeather(lat, lon, apiKey)
+            val forecastResult = weatherUseCase.getForecast(lat, lon, apiKey)
+
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    weatherData = weatherResult.getOrNull(),
+                    forecastData = forecastResult.getOrNull()
+                )
+            }
+
+            if (weatherResult.isFailure || forecastResult.isFailure) {
+                emitUiEffect(UiEffect.ShowError("Error fetching weather data"))
             }
         }
     }
