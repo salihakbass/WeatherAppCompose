@@ -30,27 +30,32 @@ class HomeViewModel @Inject constructor(
 
     fun onAction(uiAction: UiAction) {
         when (uiAction) {
-            is UiAction.FetchWeather -> fetchWeather(uiAction.lat, uiAction.lon, uiAction.apiKey)
+            is UiAction.FetchWeather -> fetchWeather(uiAction.city, uiAction.apiKey)
+            is UiAction.NavigateToSearch -> navigateToSearch()
         }
     }
 
-     fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
+    fun fetchWeather(city: String, apiKey: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val weatherResult = weatherUseCase.getWeather(lat, lon, apiKey)
-            val forecastResult = weatherUseCase.getForecast(lat, lon, apiKey)
-
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    weatherData = weatherResult.getOrNull(),
-                    forecastData = forecastResult.getOrNull()
-                )
-            }
-
-            if (weatherResult.isFailure || forecastResult.isFailure) {
+            val result = weatherUseCase.getWeather(city, apiKey)
+            if (result.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        weatherData = result.getOrNull()?.result?.firstOrNull(),
+                        forecastList = result.getOrNull()?.result ?: emptyList()
+                    )
+                }
+            } else {
                 emitUiEffect(UiEffect.ShowError("Error fetching weather data"))
             }
+        }
+    }
+
+    private fun navigateToSearch() {
+        viewModelScope.launch {
+            _uiEffect.send(UiEffect.NavigateToSearch)
         }
     }
 
