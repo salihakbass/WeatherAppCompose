@@ -1,22 +1,17 @@
 package com.salihakbas.weatherappcompose.data.source.remote
 
-import com.salihakbas.weatherappcompose.data.model.CurrentResponse
-import com.salihakbas.weatherappcompose.data.model.ForecastResponse
+import com.salihakbas.weatherappcompose.data.model.Weather
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Query
 
 interface MainService {
-    @GET("data/2.5/weather")
+    @GET("getWeather")
     suspend fun getWeather(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
-        @Query("appid") apiKey: String
-    ): CurrentResponse
+        @Query("data.city") city: String,
+        @Query("data.lang") lang: String = "tr",
+        @Header("authorization") apiKey: String = "apikey 3mfVLGaUvnPiJNFrMVMkfL:4Aqw3u7s2FCfIC5XCPyj3D",
+        @Header("content-type") contentType: String = "application/json"
+    ): Weather
 
-    @GET("data/2.5/forecast")
-    suspend fun getForecastWeather(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
-        @Query("appid") apiKey: String
-    ): ForecastResponse
 }
