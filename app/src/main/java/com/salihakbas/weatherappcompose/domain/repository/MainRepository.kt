@@ -1,10 +1,9 @@
 package com.salihakbas.weatherappcompose.domain.repository
 
-import com.salihakbas.weatherappcompose.data.model.CurrentResponse
-import com.salihakbas.weatherappcompose.data.model.ForecastResponse
+import com.salihakbas.weatherappcompose.data.model.Weather
+import com.salihakbas.weatherappcompose.data.model.WeatherResponse
 
 interface MainRepository {
-    suspend fun getWeather(lat: Double, lon: Double, apiKey: String): CurrentResponse
+    suspend fun getWeather(city: String, apiKey: String): Weather
 
-    suspend fun getForecastWeather(lat:Double,lon: Double,apiKey: String) : ForecastResponse
 }
